@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Stock Plantation</title>
+	<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-touch-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon-180x180.png">
+	<link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="favicons/favicon-194x194.png" sizes="194x194">
+	<link rel="icon" type="image/png" href="favicons/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="favicons/android-chrome-192x192.png" sizes="192x192">
+	<link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="favicons/manifest.json">
+	<link rel="shortcut icon" href="favicons/favicon.ico">
+	<meta name="msapplication-TileColor" content="#603cba">
+	<meta name="msapplication-TileImage" content="favicons/mstile-144x144.png">
+	<meta name="msapplication-config" content="favicons/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="fonts/font-awesome-4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/all.css">
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700|Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+	<script src="js/jquery.main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+	<script>
+		$(document).ready(() => {
+			url = new URL(location.href);
+			model = url.searchParams.get("model");
+			var data, portfolio;
+			$('#model_input').val(model);
+			$('#model_name').text(model);
+			jQuery.get('/history', {model: model}, (res)=>{
+				r = JSON.parse(res);
+				data = r.li.map( el => (el/400) );
+				balance_labels = r.xlabel;
+				portfolio = r.today.map( el => (el/400) );
+
+				// balance chart(line chart) label
+				// balance_labels =  ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];			
+				// pie chart label
+				portfolio_labels = ["삼성전자","현대차","POSCO","현대모비스","LG화학","한국전력","SK하이닉스","신한지주","NAVER","KB금융","현금"]
+				var balanceId = document.getElementById("balanceChart").getContext('2d');
+				var balanceChart = new Chart(balanceId, {
+					type: 'line',
+					data: {
+						labels: balance_labels,
+						datasets: [{
+							label: 'Portfolio',
+							fill: false,
+							data: data,
+							lineTension: 0,
+							borderColor: 'red',
+							borderWidth: 1
+						}, {
+							label: 'KPI200',
+							fill: false,
+							data: r.KPI200.map(el => el/r.KPI200[0]*100),
+							lineTension: 0,
+							borderColor: 'blue',
+							borderWidth: 1
+						}, {
+							label: 'KOSPI',
+							fill: false,
+							data: r.KOSPI.map(el => el/r.KOSPI[0]*100),
+							lineTension: 0,
+							borderColor: 'green',
+							borderWidth: 1
+						}]
+					},
+					options:{
+						scales: {
+							yAxes : [{
+								ticks : {
+								},
+							}],
+						},
+						elements: {
+							point:{
+								radius: 0
+							},
+						},
+					},
+				});
+				
+				var portfolioId = document.getElementById("portfolioChart").getContext('2d');
+				var portfolioChart = new Chart(portfolioId, {
+					type: 'pie',
+					data: {
+						labels: portfolio_labels,
+						datasets: [{
+							data: portfolio,
+							backgroundColor: ["#adb5bd", "#51cf66", "#ff6b6b", "#cc5de8", "#5c7cfa", "#ff922b", "#22b8cf", "#fcc419", "#20c997", "#94d82d", "#f8f9fa"],
+							borderColor: 'black',
+							borderWidth: 0.3,
+						}]
+					},
+				});
+
+				$tbl = $('.scrolltable table');
+				$tbdy = $('tbody', $tbl);
+				code_labels = {'005930': "삼성전자", '005380': "현대차", '005490': "POSCO", '012330': "현대모비스", '051910': "LG화학", '015760': "한국전력", '000660': "SK하이닉스", '055550': "신한지주", '035420': "NAVER", '105560': "KB금융"}
+				r.transaction.forEach(element => {
+					$tbdy.append(`<tr><td>${element.date}</td><td>${code_labels[element.code]}</td><td>${Math.round(element.price)}</td><td>${Math.round(element.profit)}</td></tr>`);
+				});
+			});
+			
+		});
+	</script>
+	<style>
+		table {
+		    width: 100%;
+		    border-top: 1px solid #444444;
+		    border-collapse: collapse;
+		}
+		th, td {
+		    border-bottom: 1px solid #444444;
+		    padding: 10px;
+		}
+	</style>
+</head>
+<body>
+<div id="wrapper">
+		<header id="header">
+			<div class="container">
+				<div class="logo"><a href="index.html"><img src="images/logo.png" style="max-width:120%"></a></div>
+				<nav id="nav">
+					<div class="opener-holder">
+						<a href="#" class="nav-opener"><span></span></a>
+					</div>
+					<a href="index.html" class="btn btn-primary rounded">투자자/개발자</a>
+					<div class="nav-drop">
+						<ul>
+							<li><a href="investor">Portfolio</a></li>
+							<li><a href="user_model_list.html">Models</a></li>
+						</ul>
+						<div class="drop-holder visible-sm visible-xs">
+							<span>Follow Us</span>
+							<ul class="social-networks">
+								<li><a class="fa fa-github" href="#"></a></li>
+								<li><a class="fa fa-twitter" href="#"></a></li>
+								<li><a class="fa fa-facebook" href="#"></a></li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+			</div>
+        </header>
+        <section class="main">
+            <div class="container">
+				<div class="row">
+                    <div class="text-box col-md-offset-1 col-md-10">
+						<h2 id='model_name'></h2>
+					</div>
+                </div>
+			</div>
+			<div class="chartMobile">
+				<canvas id="balanceChart"></canvas>
+				<div class="text-box col-md-offset-1 col-md-10" style="padding-top: 50px;" >
+					<h3>Portfolio</h3>
+				</div>
+				<canvas id="portfolioChart"></canvas>
+				<div class="text-box col-md-offset-1 col-md-10" style="padding-top: 40px;">
+					<h3>Transactions</h3>
+				</div>
+				<div class='scrolltable'>
+					<table>
+						<thead>
+						    <tr>
+								<th>날짜</th><th>종목</th><th>가격</th><th>실현손익</th>
+						    </tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="text-box col-md-offset-1 col-md-10" style="padding-top: 40px">
+				<div style="padding-top: 10px; padding-bottom: 20px">
+					<form action="/investor" method="POST" enctype="multipart/form-data">
+						<input type="text" name="model" id="model_input" style="display: none">
+						<div style="padding-top: 30px; padding-bottom: 30px">
+							<p>투자할 금액을 기입해주세요</p><input type="TEXT" name="invest" size="20">원
+						</div>
+						<button type="submit">투자하기</button>
+					</form>
+				</div>
+			</div>
+        </section>
+</div>
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/jquery.main.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Stock Plantation</title>
+	<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-touch-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon-180x180.png">
+	<link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="favicons/favicon-194x194.png" sizes="194x194">
+	<link rel="icon" type="image/png" href="favicons/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="favicons/android-chrome-192x192.png" sizes="192x192">
+	<link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16">
+	<link rel="manifest" href="favicons/manifest.json">
+	<link rel="shortcut icon" href="favicons/favicon.ico">
+	<meta name="msapplication-TileColor" content="#603cba">
+	<meta name="msapplication-TileImage" content="favicons/mstile-144x144.png">
+	<meta name="msapplication-config" content="favicons/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="fonts/font-awesome-4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/all.css">
+	<link href='http://fonts.googleapis.com/css?family=Montserrat:400,700|Source+Sans+Pro:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div id="wrapper">
+		<header id="header">
+			<div class="container">
+				<div class="logo"><a href="index.html"><img src="images/logo.png" style="max-width:150%"></a></div>
+				<nav id="nav">
+					<div class="opener-holder">
+						<a href="#" class="nav-opener"><span></span></a>
+					</div>
+					<a href="index.html" class="btn btn-primary rounded">투자자/개발자</a>
+					<div class="nav-drop">
+						<ul>
+							<li><a href="investor">Portfolio</a></li>
+							<li><a href="/model_list">Models</a></li>
+						</ul>
+						<div class="drop-holder visible-sm visible-xs">
+							<span>Follow Us</span>
+							<ul class="social-networks">
+								<li><a class="fa fa-github" href="#"></a></li>
+								<li><a class="fa fa-twitter" href="#"></a></li>
+								<li><a class="fa fa-facebook" href="#"></a></li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+			</div>
+        </header>
+        <section class="main">
+                <div class="container">
+                    <div class="row invest">
+                        <div class="col-md-offset-1 col-md-10 owner">
+                            <h5>현재 투자 금액</h5>
+                            <h2>{{ invest | sum(attribute='current') }}원</h2>
+                            <div class="rate">
+                                <h4><i class="fa fa-caret-up"></i> {{ ((invest | sum(attribute='diff'))*100/(invest | sum(attribute='current'))) | round(3) }}&#37;&nbsp;&nbsp;{{invest | sum(attribute='diff')}}원</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-offset-1 col-md-10 owner">
+                            <h5>현재 투자중인 모델</h5>
+                            <div class="list">
+                                    <ul>
+										{% for item in invest %}
+                                        <li>
+                                            <a href="user_model.html?model={{ item.name }}">
+                                                <span class="rate">
+                                                    <h3>{{ item.name }}</h3>
+                                                    <h4><span class="black">{{ item.current }}원</span>&emsp;&emsp;&emsp;&emsp;<i class="fa fa-caret-up"></i> {{ (item.diff *100/ item.current)|round(2) }}&#37;&nbsp;&nbsp;{{item.diff}}원</h4>
+                                                </span>
+                                            </a>
+										</li>	
+										{% endfor %}
+                                    </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+</div>
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/jquery.main.js"></script>
+</body>
+</html>

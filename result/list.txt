@@ -1,0 +1,13 @@
+model_ep300
+model_ep360
+hanjae_90
+hoyong_30
+joel_60
+minsu_22
+suyoung_98
+farmer_36
+suyun_RW
+minsu_NN
+hanje_RL
+dummy_TL
+hanje_RL
